@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhysicsLab Studio
-        
-    </title>
+    <title>PhysicsLab Studio</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -114,68 +112,68 @@
 
     <div id="ribbon">
         <div class="menu-group">
-            <button class="tool-btn" onclick="toggleDrop('m-insert')"><i class="fas fa-plus"></i> Adicionar</button>
+            <button class="tool-btn" onclick="toggleDrop('m-insert')"><i class="fas fa-plus"></i> Add</button>
             <div id="m-insert" class="dropdown-content">
-                <div onclick="spawn('box')"><i class="fas fa-cube"></i> Bloco</div>
-                <div onclick="spawn('sphere')"><i class="fas fa-circle"></i> Esfera</div>
-                <div onclick="spawn('cylinder')"><i class="fas fa-database"></i> Cilindro</div>
+                <div onclick="spawn('box')"><i class="fas fa-cube"></i> Box</div>
+                <div onclick="spawn('sphere')"><i class="fas fa-circle"></i> Sphere</div>
+                <div onclick="spawn('cylinder')"><i class="fas fa-database"></i> Cylinder</div>
                 <div onclick="spawn('cone')"><i class="fas fa-caret-up"></i> Cone</div>
             </div>
         </div>
 
         <div class="menu-group">
-            <button class="tool-btn" onclick="toggleDrop('m-world')"><i class="fas fa-globe"></i> Mundo</button>
+            <button class="tool-btn" onclick="toggleDrop('m-world')"><i class="fas fa-globe"></i> World</button>
             <div id="m-world" class="dropdown-content">
-                <div onclick="resetScene()"><i class="fas fa-sync"></i> Limpar Tudo</div>
-                <div onclick="toggleGrid()"><i class="fas fa-border-all"></i> Alternar Grade</div>
-                <div onclick="toggleFlashlight()"><i class="fas fa-lightbulb"></i> Lanterna (L)</div>
-                <div onclick="saveProject()"><i class="fas fa-save"></i> Salvar Projeto</div>
+                <div onclick="resetScene()"><i class="fas fa-sync"></i> Clear All</div>
+                <div onclick="toggleGrid()"><i class="fas fa-border-all"></i> Toggle Grid</div>
+                <div onclick="toggleFlashlight()"><i class="fas fa-lightbulb"></i> Flashlight (L)</div>
+                <div onclick="saveProject()"><i class="fas fa-save"></i> Save Project</div>
             </div>
         </div>
 
         <div class="menu-group">
-            <button class="tool-btn" onclick="toggleDrop('m-view')"><i class="fas fa-video"></i> Exibição</button>
+            <button class="tool-btn" onclick="toggleDrop('m-view')"><i class="fas fa-video"></i> View</button>
             <div id="m-view" class="dropdown-content">
-                <div onclick="setSky('space')"><i class="fas fa-moon"></i> Espaço Profundo</div>
-                <div onclick="setSky('dawn')"><i class="fas fa-sun"></i> Alvorecer</div>
-                <div onclick="toggleWireframe()"><i class="fas fa-project-diagram"></i> Modo Wireframe</div>
+                <div onclick="setSky('space')"><i class="fas fa-moon"></i> Deep Space</div>
+                <div onclick="setSky('dawn')"><i class="fas fa-sun"></i> Dawn</div>
+                <div onclick="toggleWireframe()"><i class="fas fa-project-diagram"></i> Wireframe Mode</div>
             </div>
         </div>
 
         <div style="flex-grow: 1;"></div>
-        <div style="font-size: 12px; font-weight: 900; color: var(--accent); letter-spacing: 3px;">STUDIO <span style="color:white">ULTRA</span></div>
+        <div style="font-size: 12px; font-weight: 900; color: var(--accent); letter-spacing: 3px;">STUDIO <span style="color:white">PRO</span></div>
     </div>
 
     <div id="sidebar">
-        <div class="panel-header">Física Global</div>
+        <div class="panel-header">Global Physics</div>
         <div style="padding: 15px;">
-            <div class="prop-group"><span>Gravidade</span><input type="range" id="g-strength" min="-20" max="20" step="1" value="-9.8"></div>
-            <div class="prop-group"><span>Vento X</span><input type="range" id="w-x" min="-10" max="10" step="0.5" value="0"></div>
-            <div class="prop-group"><span>Tempo</span><input type="range" id="time-scale" min="0" max="2" step="0.1" value="1"></div>
+            <div class="prop-group"><span>Gravity</span><input type="range" id="g-strength" min="-20" max="20" step="1" value="-9.8"></div>
+            <div class="prop-group"><span>Wind X</span><input type="range" id="w-x" min="-10" max="10" step="0.5" value="0"></div>
+            <div class="prop-group"><span>Time</span><input type="range" id="time-scale" min="0" max="2" step="0.1" value="1"></div>
         </div>
 
-        <div class="panel-header">Hierarquia</div>
+        <div class="panel-header">Hierarchy</div>
         <div id="objects-list"></div>
         
-        <div class="panel-header">Propriedades</div>
+        <div class="panel-header">Properties</div>
         <div id="properties-panel">
-            <div id="prop-message" style="text-align:center; padding:10px; font-size: 12px; opacity: 0.5;">Selecione um objeto para editar</div>
+            <div id="prop-message" style="text-align:center; padding:10px; font-size: 12px; opacity: 0.5;">Select an object to edit</div>
             <div id="prop-controls" style="display:none;">
-                <div class="prop-group"><span>Nome</span><input type="text" id="p-name"></div>
-                <div class="prop-group"><span>Cor</span><input type="color" id="p-color"></div>
-                <div class="prop-group"><span>Massa</span><input type="number" id="p-mass"></div>
-                <div class="prop-group"><span>Atrito</span><input type="range" id="p-friction" min="0" max="1" step="0.1"></div>
-                <div class="prop-group"><span>Fogo</span><input type="checkbox" id="p-fire"></div>
-                <div class="prop-group"><span>Gelo</span><input type="checkbox" id="p-ice"></div>
+                <div class="prop-group"><span>Name</span><input type="text" id="p-name"></div>
+                <div class="prop-group"><span>Color</span><input type="color" id="p-color"></div>
+                <div class="prop-group"><span>Mass</span><input type="number" id="p-mass"></div>
+                <div class="prop-group"><span>Friction</span><input type="range" id="p-friction" min="0" max="1" step="0.1"></div>
+                <div class="prop-group"><span>Fire</span><input type="checkbox" id="p-fire"></div>
+                <div class="prop-group"><span>Ice</span><input type="checkbox" id="p-ice"></div>
                 
-                <button id="expl-btn" class="btn-action"><i class="fas fa-bomb"></i> Detonar Objeto</button>
-                <button id="del-btn" class="btn-action"><i class="fas fa-trash"></i> Remover</button>
+                <button id="expl-btn" class="btn-action"><i class="fas fa-bomb"></i> Explode Object</button>
+                <button id="del-btn" class="btn-action"><i class="fas fa-trash"></i> Remove</button>
             </div>
         </div>
     </div>
 
-    <div class="stats" id="stats-ui">FPS: 60 | Objetos: 0 | Wind: 0m/s</div>
-    <div id="toast">Projeto Salvo!</div>
+    <div class="stats" id="stats-ui">FPS: 60 | Objects: 0 | Wind: 0m/s</div>
+    <div id="toast">Project Saved!</div>
 
     <script type="module">
         import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js'
@@ -211,6 +209,13 @@
         const sun = new THREE.DirectionalLight(0xffffff, 0.8);
         sun.position.set(50, 100, 50);
         sun.castShadow = true;
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
         sun.shadow.mapSize.set(2048, 2048);
         scene.add(sun);
 
@@ -246,10 +251,12 @@
                 case 'cylinder': 
                     geometry = new THREE.CylinderGeometry(1, 1, 3, 24); 
                     shape = new CANNON.Cylinder(1, 1, 3, 24); 
+                    shapeQuat = new CANNON.Quaternion().setFromEuler(-Math.PI/2, 0, 0);
                     break;
                 case 'cone': 
                     geometry = new THREE.ConeGeometry(1.5, 3, 24); 
                     shape = new CANNON.Cylinder(0.01, 1.5, 3, 24); 
+                    shapeQuat = new CANNON.Quaternion().setFromEuler(-Math.PI/2, 0, 0);
                     break;
             }
 
@@ -257,6 +264,7 @@
             mesh.castShadow = mesh.receiveShadow = true;
             
             const body = new CANNON.Body({ mass, shape });
+            if(shapeQuat) body.quaternion.copy(shapeQuat);
             const spawnPos = new THREE.Vector3(0, 0, -12).applyQuaternion(camera.quaternion).add(camera.position);
             body.position.copy(spawnPos);
             
@@ -264,13 +272,13 @@
             world.addBody(body);
 
             const objData = { 
-                mesh, body, id: Date.now(), name: `${type}_${objects.length}`, 
+                mesh, body, id: Date.now(), name: `${type.charAt(0).toUpperCase() + type.slice(1)} ${objects.length + 1}`, 
                 fire: false, ice: false, particles: [] 
             };
             objects.push(objData);
             updateUI();
             selectObject(objData);
-            showToast(`Objeto ${type} criado`);
+            showToast(`${type} spawned`);
         };
 
         window.selectObject = (obj) => {
@@ -296,7 +304,7 @@
         window.setSky = (type) => {
             if(type === 'space') scene.background = new THREE.Color(0x020205);
             if(type === 'dawn') scene.background = new THREE.Color(0xffaa88);
-            showToast(`Ambiente alterado: ${type}`);
+            showToast(`Environment: ${type}`);
         };
 
         window.toggleWireframe = () => {
@@ -318,7 +326,7 @@
         window.saveProject = () => {
             const data = objects.map(o => ({ name: o.name, pos: o.body.position }));
             localStorage.setItem('physics_save', JSON.stringify(data));
-            showToast("Progresso salvo localmente!");
+            showToast("Project saved locally!");
         };
 
         function showToast(txt) {
@@ -351,7 +359,7 @@
                     o.body.applyImpulse(dir.scale(50 / (dist + 1)), o.body.position);
                 }
             });
-            showToast("Explosão gerada!");
+            showToast("Boom!");
         };
 
         document.getElementById('del-btn').onclick = () => {
@@ -371,7 +379,7 @@
                 el.onclick = (e) => { e.stopPropagation(); selectObject(o); };
                 list.appendChild(el);
             });
-            document.getElementById('stats-ui').innerText = `FPS: 60 | Objetos: ${objects.length} | Wind: ${wind.x}m/s`;
+            document.getElementById('stats-ui').innerText = `FPS: 60 | Objects: ${objects.length} | Wind: ${wind.x}m/s`;
         }
 
         // --- CAMERA SYSTEM ---
