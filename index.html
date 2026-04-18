@@ -98,9 +98,14 @@
         #expl-btn { background: rgba(255, 165, 0, 0.1); color: orange; border-color: rgba(255, 165, 0, 0.2); }
         #expl-btn:hover { background: orange; color: white; }
 
-        .stats { position: fixed; bottom: 15px; left: 15px; font-size: 10px; color: #444; pointer-events: none; z-index: 10; }
+        .stats { position: fixed; bottom: 15px; left: 15px; font-size: 11px; color: #666; pointer-events: none; z-index: 10; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 4px; }
         
-        /* --- TOAST --- */
+        #search-box { background: #000; border: 1px solid var(--border); color: #fff; padding: 5px; width: calc(100% - 20px); margin: 10px; border-radius: 4px; font-size: 12px; }
+        
+        .viewport-tools { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 80; }
+        .v-btn { background: var(--bg-panel); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 50%; cursor: pointer; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; }
+        .v-btn:hover { background: var(--accent); }
+        
         #toast {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
             background: var(--accent); color: white; padding: 10px 20px; border-radius: 50px;
@@ -118,6 +123,9 @@
                 <div onclick="spawn('sphere')"><i class="fas fa-circle"></i> Sphere</div>
                 <div onclick="spawn('cylinder')"><i class="fas fa-database"></i> Cylinder</div>
                 <div onclick="spawn('cone')"><i class="fas fa-caret-up"></i> Cone</div>
+                <div onclick="spawn('torus')"><i class="fas fa-ring"></i> Torus</div>
+                <div onclick="spawn('ico')"><i class="fas fa-gem"></i> Icosahedron</div>
+                <div onclick="spawn('cloth')"><i class="fas fa-scroll"></i> Cloth</div>
             </div>
         </div>
 
@@ -127,7 +135,8 @@
                 <div onclick="resetScene()"><i class="fas fa-sync"></i> Clear All</div>
                 <div onclick="toggleGrid()"><i class="fas fa-border-all"></i> Toggle Grid</div>
                 <div onclick="toggleFlashlight()"><i class="fas fa-lightbulb"></i> Flashlight (L)</div>
-                <div onclick="saveProject()"><i class="fas fa-save"></i> Save Project</div>
+                <div onclick="exportJSON()"><i class="fas fa-file-export"></i> Export JSON</div>
+                <div onclick="document.getElementById('file-input').click()"><i class="fas fa-file-import"></i> Import JSON</div>
             </div>
         </div>
 
@@ -136,7 +145,9 @@
             <div id="m-view" class="dropdown-content">
                 <div onclick="setSky('space')"><i class="fas fa-moon"></i> Deep Space</div>
                 <div onclick="setSky('dawn')"><i class="fas fa-sun"></i> Dawn</div>
+                <div onclick="toggleFog()"><i class="fas fa-smog"></i> Toggle Fog</div>
                 <div onclick="toggleWireframe()"><i class="fas fa-project-diagram"></i> Wireframe Mode</div>
+                <div onclick="resetCamera()"><i class="fas fa-camera"></i> Reset Camera</div>
             </div>
         </div>
 
@@ -149,10 +160,19 @@
         <div style="padding: 15px;">
             <div class="prop-group"><span>Gravity</span><input type="range" id="g-strength" min="-20" max="20" step="1" value="-9.8"></div>
             <div class="prop-group"><span>Wind X</span><input type="range" id="w-x" min="-10" max="10" step="0.5" value="0"></div>
-            <div class="prop-group"><span>Time</span><input type="range" id="time-scale" min="0" max="2" step="0.1" value="1"></div>
+            <div class="prop-group"><span>Time Scale</span><input type="range" id="time-scale" min="0" max="2" step="0.1" value="1"></div>
+            <div class="prop-group"><span>Substeps</span><input type="number" id="substeps" value="1" min="1" max="10"></div>
+        </div>
+
+        <div class="panel-header">Environment</div>
+        <div style="padding: 15px;">
+            <div class="prop-group"><span>Ambient</span><input type="range" id="amb-int" min="0" max="2" step="0.1" value="0.3"></div>
+            <div class="prop-group"><span>FOV</span><input type="range" id="cam-fov" min="30" max="120" step="1" value="70"></div>
+            <div class="prop-group"><span>Ground Color</span><input type="color" id="ground-col" value="#111111"></div>
         </div>
 
         <div class="panel-header">Hierarchy</div>
+        <input type="text" id="search-box" placeholder="Search objects..." oninput="updateUI()">
         <div id="objects-list"></div>
         
         <div class="panel-header">Properties</div>
@@ -161,29 +181,44 @@
             <div id="prop-controls" style="display:none;">
                 <div class="prop-group"><span>Name</span><input type="text" id="p-name"></div>
                 <div class="prop-group"><span>Color</span><input type="color" id="p-color"></div>
+                <div class="prop-group"><span>Position Y</span><input type="number" id="p-pos-y" step="0.5"></div>
                 <div class="prop-group"><span>Mass</span><input type="number" id="p-mass"></div>
-                <div class="prop-group"><span>Friction</span><input type="range" id="p-friction" min="0" max="1" step="0.1"></div>
+                <div class="prop-group"><span>Bounciness</span><input type="range" id="p-bounce" min="0" max="1.5" step="0.1"></div>
+                <div class="prop-group"><span>Metalness</span><input type="range" id="p-metal" min="0" max="1" step="0.1"></div>
+                <div class="prop-group"><span>Roughness</span><input type="range" id="p-rough" min="0" max="1" step="0.1"></div>
+                <div class="prop-group"><span>Opacity</span><input type="range" id="p-alpha" min="0" max="1" step="0.1" value="1"></div>
                 <div class="prop-group"><span>Fire</span><input type="checkbox" id="p-fire"></div>
                 <div class="prop-group"><span>Ice</span><input type="checkbox" id="p-ice"></div>
                 
-                <button id="expl-btn" class="btn-action"><i class="fas fa-bomb"></i> Explode Object</button>
+                <button id="expl-btn" class="btn-action"><i class="fas fa-bomb"></i> Force Explosion</button>
                 <button id="del-btn" class="btn-action"><i class="fas fa-trash"></i> Remove</button>
             </div>
         </div>
     </div>
 
-    <div class="stats" id="stats-ui">FPS: 60 | Objects: 0 | Wind: 0m/s</div>
+    <div class="viewport-tools">
+        <button class="v-btn" onclick="setTransformMode('translate')" title="Move (G)"><i class="fas fa-arrows-alt"></i></button>
+        <button class="v-btn" onclick="setTransformMode('rotate')" title="Rotate (R)"><i class="fas fa-sync"></i></button>
+        <button class="v-btn" onclick="setTransformMode('scale')" title="Scale (S)"><i class="fas fa-expand"></i></button>
+        <button class="v-btn" onclick="takeScreenshot()" title="Screenshot"><i class="fas fa-camera-retro"></i></button>
+        <button class="v-btn" onclick="toggleFullscreen()" title="Fullscreen"><i class="fas fa-expand-arrows-alt"></i></button>
+    </div>
+
+    <div class="stats" id="stats-ui">FPS: 0 | Objects: 0</div>
     <div id="toast">Project Saved!</div>
+    <input type="file" id="file-input" style="display:none" accept=".json">
 
     <script type="module">
         import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js'
         import * as CANNON from 'https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js'
+        import { TransformControls } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/controls/TransformControls.js'
 
-        // --- CORE CONFIG ---
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x050505);
         const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
+        camera.position.set(0, 10, 20);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true, preserveDrawingBuffer: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -193,17 +228,19 @@
         world.gravity.set(0, -9.82, 0);
         world.allowSleep = true;
 
-        // --- GLOBAL VARS ---
         let objects = [];
         let selected = null;
         let timeScale = 1.0;
         let wind = { x: 0, z: 0 };
+        let lastTime = performance.now();
+        let frames = 0;
+        let fps = 0;
+
         const keys = {};
         const flashlight = new THREE.SpotLight(0xffffff, 0, 40, Math.PI/6, 0.5);
         scene.add(flashlight);
         scene.add(flashlight.target);
 
-        // --- LIGHTING ---
         const ambient = new THREE.AmbientLight(0xffffff, 0.3);
         scene.add(ambient);
         const sun = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -216,18 +253,30 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
+        const tControls = new TransformControls(camera, renderer.domElement);
+        tControls.addEventListener('dragging-changed', (e) => {
+            keys['is_dragging'] = e.value;
+            if(!e.value && selected) selected.body.position.copy(selected.mesh.position);
+        });
+        scene.add(tControls);
+
         sun.shadow.mapSize.set(2048, 2048);
         scene.add(sun);
 
         const grid = new THREE.GridHelper(200, 50, 0x222222, 0x111111);
         scene.add(grid);
 
+        const groundGeo = new THREE.PlaneGeometry(200, 200);
+        const groundMesh = new THREE.Mesh(groundGeo, new THREE.MeshStandardMaterial({ color: 0x111111 }));
+        groundMesh.rotation.x = -Math.PI / 2;
+        groundMesh.receiveShadow = true;
+        scene.add(groundMesh);
+
         const groundMat = new CANNON.Material("ground");
         const groundBody = new CANNON.Body({ mass: 0, shape: new CANNON.Plane(), material: groundMat });
         groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
         world.addBody(groundBody);
 
-        // --- FEATURES FUNCTIONS ---
         window.toggleDrop = (id) => {
             const el = document.getElementById(id);
             const isVisible = el.style.display === 'block';
@@ -236,7 +285,7 @@
         };
 
         window.spawn = (type) => {
-            let geometry, shape, mass = 1;
+            let geometry, shape, mass = 1, shapeQuat = null;
             const color = Math.random() * 0xffffff;
 
             switch(type) {
@@ -258,6 +307,46 @@
                     shape = new CANNON.Cylinder(0.01, 1.5, 3, 24); 
                     shapeQuat = new CANNON.Quaternion().setFromEuler(-Math.PI/2, 0, 0);
                     break;
+                case 'torus':
+                    geometry = new THREE.TorusGeometry(1, 0.4, 16, 100);
+                    shape = new CANNON.Sphere(1.2);
+                    break;
+                case 'ico':
+                    geometry = new THREE.IcosahedronGeometry(1.5, 0);
+                    shape = new CANNON.Sphere(1.5);
+                    break;
+                case 'cloth':
+                    const segments = 10;
+                    geometry = new THREE.PlaneGeometry(8, 8, segments, segments);
+                    const clothMat = new THREE.MeshStandardMaterial({ color, side: THREE.DoubleSide, wireframe: false });
+                    const clothMesh = new THREE.Mesh(geometry, clothMat);
+                    clothMesh.castShadow = true;
+                    clothMesh.receiveShadow = true;
+
+                    const particles = [];
+                    const posAttr = geometry.attributes.position;
+                    for (let i = 0; i < posAttr.count; i++) {
+                        const v = new THREE.Vector3().fromBufferAttribute(posAttr, i);
+                        const worldPos = v.clone().add(new THREE.Vector3(0, 10, -10).applyQuaternion(camera.quaternion).add(camera.position));
+                        particles.push({ pos: worldPos.clone(), oldPos: worldPos.clone(), original: v.clone() });
+                    }
+
+                    const constraints = [];
+                    for (let y = 0; y <= segments; y++) {
+                        for (let x = 0; x <= segments; x++) {
+                            if (x < segments) constraints.push({ p1: y * (segments + 1) + x, p2: y * (segments + 1) + x + 1, dist: 8 / segments });
+                            if (y < segments) constraints.push({ p1: y * (segments + 1) + x, p2: (y + 1) * (segments + 1) + x, dist: 8 / segments });
+                        }
+                    }
+
+                    const clothObj = { 
+                        mesh: clothMesh, body: null, id: Date.now(), name: `Cloth ${objects.length + 1}`, 
+                        softParticles: particles, constraints, fire: false, ice: false, particles: [] 
+                    };
+                    scene.add(clothMesh);
+                    objects.push(clothObj);
+                    updateUI();
+                    return;
             }
 
             const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color, roughness: 0.4, metalness: 0.3 }));
@@ -372,20 +461,19 @@
         function updateUI() {
             const list = document.getElementById('objects-list');
             list.innerHTML = '';
-            objects.forEach(o => {
+            const query = document.getElementById('search-box').value.toLowerCase();
+            objects.filter(o => o.name.toLowerCase().includes(query)).forEach(o => {
                 const el = document.createElement('div');
                 el.className = `object-item ${selected === o ? 'selected-ui' : ''}`;
                 el.innerHTML = `<span>${o.name}</span> <i class="fas fa-eye" style="opacity:0.3"></i>`;
                 el.onclick = (e) => { e.stopPropagation(); selectObject(o); };
                 list.appendChild(el);
             });
-            document.getElementById('stats-ui').innerText = `FPS: 60 | Objects: ${objects.length} | Wind: ${wind.x}m/s`;
         }
 
-        // --- CAMERA SYSTEM ---
         let yaw = 0, pitch = 0;
         window.addEventListener('mousemove', e => {
-            if (e.buttons === 2) {
+            if (e.buttons === 2 && !keys['is_dragging']) {
                 yaw -= e.movementX * 0.003;
                 pitch -= e.movementY * 0.003;
                 pitch = Math.max(-Math.PI/2, Math.min(Math.PI/2, pitch));
